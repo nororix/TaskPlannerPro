@@ -1,0 +1,198 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #cad2c5;
+  color: #2f3e46;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+/*----HEADER SECTION---*/
+.header {
+  width: 100%;
+  padding: 20px 20px;
+  text-align: center;
+}
+
+.header__title {
+  color: #2f3e46;
+  font-size: 40px;
+  width: 100%;
+}
+
+/*---HEADER QUERIES---*/
+/*---HEADER END---*/
+
+/*----FORM SECTION---*/
+
+.task-form {
+  background: #52796f;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.task-form__title {
+  color: #f9f9f9;
+}
+.task-form__type {
+  margin-top: 10px;
+}
+.task-form__name,
+.task-form__description,
+.task-form__date,
+.task-form__stats {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.task-form__date {
+  color: #2f3e46;
+}
+
+.task-form__button {
+  width: 100%;
+  padding: 10px;
+  background: #52796f;
+  color: #cad2c5;
+  border: 1px solid #cad2c5;
+  border-radius: 5px;
+  transition: 0.3s;
+  font-size: 15px;
+  margin-top: 20px;
+}
+
+.task-form__button:hover {
+  background: #cad2c5;
+  color: #2f3e46;
+}
+
+/*---FORM QUERIES---*/
+/*---FORM END---*/
+
+/*----TASKLIST SECTION---*/
+
+.task-list__title {
+  font-size: 30px;
+  margin: 50px;
+  text-align: center;
+}
+
+.task-list__container {
+  display: flex;
+}
+
+.task-table {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  font-family: "Arial", sans-serif;
+}
+
+.task-table th,
+.task-table td {
+  border: 1px solid #52796f;
+  padding: 10px;
+  text-align: left;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+}
+
+.task-table th {
+  background-color: #84a98c;
+  font-weight: bold;
+}
+
+/*---TASKLIST QUERIES---*/
+@media screen and (max-width: 768px) {
+  .task-table thead {
+    display: none; /* Oculta los headers */
+  }
+
+  .task-table,
+  .task-table tbody,
+  .task-table tr,
+  .task-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .task-table tr {
+    margin-bottom: 1rem;
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .task-table td {
+    position: relative;
+    padding: 40px;
+    text-align: right;
+    border: none;
+    margin-bottom: 10px;
+  }
+
+  .task-table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-weight: bold;
+    text-align: left;
+    color: #333;
+    width: 100px;
+    white-space: nowrap;
+  }
+}
+
+/*---TASKLIST END---*/
+/*---APIS SECTION ---*/
+.api-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+#weather,
+#advice-section {
+  flex: 1 1 0;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+/*---APIS QUERIES---*/
+@media screen and (max-width: 768px) {
+  .api-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #weather,
+  #advice-section {
+    width: 100%;
+    max-width: 400px;
+  }
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Planner</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <h1 class="header__title">Planificador de tareas y eventos</h1>
+    </header>
+    <main class="main">
+      <section class="task-form">
+        <h2 class="task-form__title">¿Nueva tarea o evento?</h2>
+        <form class="task-form__form" id="new-task">
+          <label>
+            <input
+              type="radio"
+              class="task-form__type"
+              id="task-event"
+              name="task-type"
+              value="event"
+              checked
+            />
+            Evento
+          </label>
+          <label>
+            <input
+              type="radio"
+              class="task-form__type"
+              id="task-task"
+              name="task-type"
+              value="task"
+            />
+            Tarea
+          </label>
+          <input
+            class="task-form__name"
+            type="text"
+            id="task-title"
+            placeholder="Nombre"
+            required
+          />
+          <textarea
+            class="task-form__description"
+            id="task-desc"
+            placeholder="Descripción"
+          ></textarea>
+          <label for="task-date">Fecha de vencimiento</label>
+          <input class="task-form__date" type="date" id="task-date" required />
+          <select class="task-form__status" id="task-stats">
+            <option value="pending">Pendiente...</option>
+            <option value="in-progess">En progreso</option>
+            <option value="completed">¡Completada!</option>
+          </select>
+          <button class="task-form__button" type="submit">Agregar</button>
+        </form>
+      </section>
+
+      <section class="task-list">
+        <h2 class="task-list__title">Mis tareas</h2>
+        <ul class="task-list__container" id="tasks-container"></ul>
+      </section>
+
+      <section class="api-section">
+        <section id="weather">
+          <h2>Clima de hoy</h2>
+          <div id="weather-info">Cargando clima...</div>
+        </section>
+        <section id="advice-section">
+          <h2>Consejo del día</h2>
+          <div id="advice-info">Cargando consejo...</div>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
