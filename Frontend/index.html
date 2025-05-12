@@ -11,6 +11,26 @@
       <h1 class="header__title">Planificador de tareas y eventos</h1>
     </header>
     <main class="main">
+      <section class ="auth-container">
+        <form id="login-form">
+          <h2 class = "login-form__title">Iniciar sesión</h2>
+          <input type="text" class="login-form__user" id="login-form__username" placeholder="Usuario" required/>
+          <input type="password" class="login-form__user" id="login-form__password" placeholder="Contraseña" required/>
+          <button type ="submit" class="login-form__button">Enviar</button>
+          <p class="toggle-form">¿No tienes cuenta? <a href ="#" id="show-register">Regístrate aquí</a></p>
+        </form>
+
+
+        <form id="register-form" style="display:none">
+          <h2 class="register-form__title"> Registro</h2>
+          <input type="text" class="register-form__user" id="register-name" placeholder="Nombre" required>
+          <input type="email" class ="register-form__user" id="register-email" placeholder="Email" required>
+          <input type="password" class ="register-form__user" id="register-password" placeholder ="Contraseña" required>
+          <button type="submit" class="register-form__button">Registrarse</button>
+          <p class="toggle-form">¿Ya tienes cuenta? <a href="#" id="show-login">Inicia sesión</a></p>
+        </form>
+      </section>
+
       <section class="task-form">
         <h2 class="task-form__title">¿Nueva tarea o evento?</h2>
         <form class="task-form__form" id="new-task">
@@ -56,6 +76,10 @@
           </select>
           <button class="task-form__button" type="submit">Agregar</button>
         </form>
+        <form id="upload-form" enctype="multipart/form-data">
+          <input type="file" id="file" name="file" />
+          <button type="submit">Subir archivo</button>
+        </form>        
       </section>
 
       <section class="task-list">

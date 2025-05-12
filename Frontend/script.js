@@ -7,10 +7,6 @@ const taskList = document.getElementById("tasks-container");
 let table;
 let tbody;
 
-const loadTasksFromStorage = () =>{
-   const tasks = JSON.parse (localStorage.getItem('tasks')) || [];
-   tasks.forEach(task=>addTask(task));
-}
 //Definimos la funcion para crear la tabla en la que se mostrarán las tareas
 const addTask =(task)=>{
     if(!table){
@@ -63,12 +59,6 @@ const addTask =(task)=>{
     row.appendChild(cellDesc);
     row.appendChild(cellStatus);
 
-    //Botón para eliminar tareas y eventos 
-    const cellActions = document.createElement("td");
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "Eliminar";
-    deleteBtn.classList.add("delete-btn");
-
     //Botón para editar tareas y eventos
     const editBtn = document.createElement("button");
     editBtn.textContent = "Editar";
@@ -81,14 +71,24 @@ const addTask =(task)=>{
         taskform.setAttribute("data-editing-id",task.id);
     });
 
-    deleteBtn.addEventListener("click", () => {
+    //Botón para eliminar tareas y eventos 
+    const cellActions = document.createElement("td");
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Eliminar";
+    deleteBtn.classList.add("delete-btn");
+    
+
+    deleteBtn.addEventListener("click", async () => {
+
+        const token = localStorage.getItem('token')
+        await fetch (`http://localhost:3000/api/tasks/${task.id}`,{
+            method: "DELETE",
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
      // Eliminar del DOM
     row.remove();
-
-    // Eliminar del localStorage
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks = tasks.filter(taskItem => taskItem.id !== task.id);
-    localStorage.setItem("tasks", JSON.stringify(tasks));
 });
 
 cellActions.appendChild(editBtn);
@@ -99,8 +99,18 @@ row.appendChild(cellActions);
     tbody.appendChild(row);
 };
 
+const loadTasks = async () => {
+    try{
+    const res = await fetch("http://localhost:3000/api/tasks");
+    const tasks = await res.json();
+    tasks.forEach(task => addTask(task));
+    }catch(err){
+        console.error("Error al cargar las tareas:", err);
+    }
+};
+
 //Capturamos los valores del formulario:
-taskform.addEventListener("submit", (e) => {
+taskform.addEventListener("submit", async (e) => {
     e.preventDefault();
     const taskType = document.querySelector('input[name="task-type"]:checked').value;
     const taskName = document.getElementById ("task-title").value;
@@ -108,35 +118,8 @@ taskform.addEventListener("submit", (e) => {
     const taskDesc = document.getElementById("task-desc").value;
     const taskStats = document.getElementById("task-stats").value;
 
-//Editar las tareas/eventos 
-const editingId = taskform.getAttribute("data-editing-id");
-
-if(editingId){
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    tasks = tasks.map(t=>{
-        if(t.id==editingId){
-            return{
-                ...t,
-                title: taskName, 
-                date: taskDate,
-                desc: taskDesc,
-                status: taskStats
-            };
-        }
-        return t;
-    });
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    taskform.removeAttribute("data-editing-id");
-    tbody.innerHTML="";
-    tasks.forEach(task=>addTask(task));
-    return;
-
-}
-
-
 //Guardamos los valores en un objeto para crear la nueva tarea:
 const newtask = {
-    id:Date.now(),
     type: taskType,
     title: taskName,
     date: taskDate,
@@ -144,15 +127,53 @@ const newtask = {
     status: taskStats,
 }
 
-const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-tasks.push(newtask);
-localStorage.setItem('tasks', JSON.stringify(tasks));
+//Editar las tareas/eventos 
+const editingId = taskform.getAttribute("data-editing-id");
 
+if(editingId){
+    try{
+        const token = localStorage.getItem('token');
 
-addTask(newtask);
+        const res = await fetch (`http://localhost:3000/api/tasks/${editingId}`,{
+            method: 'PUT',
+            headers:{
+                'Content-Type': 'applications/json',
+                'Authorization': `Bearer ${token}`
+
+            },
+            body: JSON.stringify(newtask)
+        });
+        const updatedTask = await res.json();
+        taskform.removeAttribute("data-editing-id");
+        tbody.innerHTML ="";
+        loadTasks();
+    }catch (err){
+        console.error("Error al actualizar la tarea:", err);
+    }
+}else{
+    try{
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:3000/api/tasks',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization' : `Bearer ${token}`
+            },
+            body: JSON.stringify(newtask)
+        });
+        const createdTask = await res.json();
+        createdTask.id = createdTask._id;
+
+        addTask(createdTask);
+    }catch{
+        console.error("Error al crear la tarea: ", err);
+    }
+}
+
+taskform.reset();
 });
 
-loadTasksFromStorage();
+loadTasks();
 
 //Llamada a la API para obtener el tiempo de hoy 
 const getWeather = async () => {
@@ -205,7 +226,95 @@ const getAdvice = async () => {
 // Llamamos a la función para cargar un consejo
 getAdvice();
 
+//Visibilidad de los formularios de registro y login 
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
+const showRegister = document.getElementById("show-register");
+const showLogin = document.getElementById("show-login");
+  
+showRegister.addEventListener("click", (e) => {
+    e.preventDefault();
+    loginForm.style.display = "none";
+    registerForm.style.display = "block";
+});
+  
+showLogin.addEventListener("click", (e) => {
+    e.preventDefault();
+    registerForm.style.display = "none";
+    loginForm.style.display = "block";
+    });
 
+//Conectar formularios de registro y login con el backend
+document.getElementById('register-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    //Formulario de registro
+    const username = document.getElementById('register-name').value;
+    const password = document.getElementById('register-password').value;
+
+    const res = await fetch ('http://localhost:3000/api/auth/login',{
+        method: 'POST',
+        headers: {'Content-Type': 'applications/json'},
+        body: JSON.stringify({username, password})
+    });
+
+    const data = await res.json();
+    alert(data.message ||'Registro completado');
+});
+    //Formulario de Login
+document.getElementById('login-form').addEventListener('submit', async (e)=>{
+    const username = document.getElementById('login-form__username').value;
+    const password = document.getElementById('login-form__password').value;
+
+    const res = await fetch ('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type' : 'application/json'},
+        body: JSON.stringify({username, password})
+    });
+    
+    const data = await res.json();
+    if(res.ok){
+        localStorage.setItem('token', data.token);
+        alert('Login exitoso');
+    }else{
+        alert(data.message || 'Error en login');
+    }
+});
+
+//Gestión de la subida de archivos
+document.getElementById('upload-form').addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const file = document.getElementById('file').files[0];
+    if(!file){
+        alert ('Por favor selecciona un archivo');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('token');
+
+    try{
+        const res =await fetch('http://localhost:3000/upload',{
+            method: 'POST',
+            headers:{
+                'Authorization': `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        const data = await res.json();
+        if(res.ok){
+            alert('Archivo subido con éxito');
+            console.log('Archivo: ', data.file);
+        }else{
+            alert(data.message || 'Error al subir el archivo');
+        }
+    }catch (err){
+        console.log('Error en la subida: ', err);
+    }
+})
 
 });
 

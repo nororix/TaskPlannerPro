@@ -1,14 +1,13 @@
 const express = require ('express');
 const router = express.Router();
-const { getTasks, createTask } = require('../controllers/taskController');
+const taskController = require('../controllers/taskController');
+const authMiddleware = require('../middlewares/authMiddleware');
 
-//GET para obtener las tareas
-router.get('/', (req, res) => {
-    res.send('Listado de tareas');
-});
 
-router.get('/',getTasks);
-router.post('/', createTask);
+router.get('/', authMiddleware, taskController.getTasks);
+router.post('/', authMiddleware, taskController.createTask);
+router.put('/:id', authMiddleware, taskController.updateTask);
+router.delete('/:id', authMiddleware, taskController.deleteTask);
 
 
 module.exports = router; 
